@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./App.css"
+import "./App.css";
+import NewsCardComponent from "./NewsCardComponent.js"
 
 
 class FirstNews extends Component{
@@ -9,6 +10,7 @@ class FirstNews extends Component{
     super();
     this.state ={
       list: null,
+      inputValue: null
   }
 
   this.getScience = this.getScience.bind(this);
@@ -16,6 +18,8 @@ class FirstNews extends Component{
   this.getSports = this.getSports.bind(this);
   this.getHealth = this.getHealth.bind(this);
   this.getEntertainment = this.getEntertainment.bind(this);
+  this.inputChanged = this.inputChanged.bind(this);
+  this.handleSubmit = this.handleSubmit.bind(this);
 };
 
 
@@ -58,36 +62,39 @@ class FirstNews extends Component{
     });
   }
 
+  inputChanged(e){
+
+    this.setState({inputValue: e.target.value});
+  }
+
+  handleSubmit(e){
+    axios.get('https://gnews.io/api/v3/search?q=' + this.state.inputValue + '&image=required&token=0e5ea080bb48fc6a975fba5874967685').then(res=>{
+      this.setState({list: res.data.articles});
+    })
+    e.preventDefault()
+  }
+
 render(){
   return(
     <div className="container">
-      <div className="row mb-3 mt-4">
-        <button className="btn btn-primary" onClick={this.getScience} style={{margin:"5px"}}>Science</button>
-        <button className="btn btn-primary" onClick={this.getBusiness} style={{margin:"5px"}}>Business</button>
-        <button className="btn btn-primary" onClick={this.getSports} style={{margin:"5px"}}>Sports</button>
-        <button className="btn btn-primary" onClick={this.getHealth} style={{margin:"5px"}}>Health</button>
-        <button className="btn btn-primary" onClick={this.getEntertainment} style={{margin:"5px"}}>Entertainment</button>
+
+      <center className="mt-5 animate__animated animate__wobble animate__delay-2s"><h1 style={{fontFamily: "stencil", color:"#ff0000"}}> Way 2 Be Up To Date</h1></center>
+      <form onSubmit={this.handleSubmit} style={{maxWidth:"100%"}} className="mt-5">
+
+          <input className="form-control" placeholder="Search for any other Topic" type="text"  value={this.state.inputValue} onChange={this.inputChanged}/>
+      </form>
+
+      <div className="row no-gutters mb-5 mt-4">
+        <button className="btn btn-primary " onClick={this.getScience} style={{margin:"8px"}}>Science</button>
+        <button className="btn btn-primary " onClick={this.getBusiness} style={{margin:"8px"}}>Business</button>
+        <button className="btn btn-primary" onClick={this.getSports} style={{margin:"8px"}}>Sports</button>
+        <button className="btn btn-primary" onClick={this.getHealth} style={{margin:"8px"}}>Health</button>
+        <button className="btn btn-primary" onClick={this.getEntertainment} style={{margin:"8px"}}>Entertainment</button>
       </div>
     <div  style={{textAlign:"left"}}>
     {this.state.list ? this.state.list.map((list, i) =>
-
-      <div className="card bg-light border-light rounded shadow-lg mb-3 " key={i} style={{maxWidth: "100%"}} >
-            <div className="row no-gutters">
-                  <div className="col-md-4" >
-                        <img src={list.image} className="card-img" alt='not available'/>
-                  </div>
-                  <div className="col-md-8">
-                        <div className="card-body ">
-                              <h5 className="card-title">{list.title}</h5>
-                                  <p className="card-text"><small className="text-muted">{list.source.name}</small></p>
-                                  <p className="card-text"><a href={list.url}>{list.description}</a></p>
-                                  <p className="card-text"><small className="text-muted">{list.publishedAt}</small></p>
-                                  <a href={list.url}><p className="card-text"><small className="text-muted">visit</small></p></a>
-                          </div>
-                    </div>
-                </div>
-       </div>
-   ) : null }
+          <NewsCardComponent list={list} key={i} />
+         ) : null }
     </div>
     </div>
 )
