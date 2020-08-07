@@ -9,7 +9,8 @@ class FirstNews extends Component{
     super();
     this.state ={
       list: null,
-      inputValue: null
+      inputValue: null,
+      text: "Top Headlines"
   }
 
   this.getScience = this.getScience.bind(this);
@@ -68,7 +69,9 @@ class FirstNews extends Component{
 
   handleSubmit(e){
     axios.get('https://gnews.io/api/v3/search?q=' + this.state.inputValue + '&image=required&token=0e5ea080bb48fc6a975fba5874967685').then(res=>{
-      this.setState({list: res.data.articles});
+      this.setState({list: res.data.articles,
+                      text: "Search results for  '" + this.state.inputValue + "'"
+      });
     })
     e.preventDefault()
   }
@@ -90,6 +93,7 @@ render(){
         <button className="btn btn-primary" onClick={this.getHealth} style={{margin:"8px"}}>Health</button>
         <button className="btn btn-primary" onClick={this.getEntertainment} style={{margin:"8px"}}>Entertainment</button>
       </div>
+      <h4 style={{textAlign:"left", marginBottom:"15px"}}> {this.state.text} </h4>
     <div  style={{textAlign:"left"}}>
     {this.state.list ? this.state.list.map((list, i) =>
           <NewsCardComponent list={list} key={i} />
